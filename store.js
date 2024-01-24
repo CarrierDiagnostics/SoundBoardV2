@@ -11,6 +11,7 @@ export const AuthStore = new Store({
   messages:null,
   markedDates:null,
   oraganiseData:[{id:1,title:"Getting things ready"}],
+  analysedData:null,
 });
 
 registerInDevtools({AuthStore});

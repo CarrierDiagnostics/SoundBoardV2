@@ -12,7 +12,7 @@ const TabsLayout = () => {
         name="Calendar"
         options={{
           title: "Calendar",
-          tabBarIcon: () => <Text>Calendar</Text>,
+          tabBarIcon: () => <Text>💬</Text>,
         }}
       />
       
@@ -20,14 +20,21 @@ const TabsLayout = () => {
         name="Talk"
         options={{
           title: "Talk",
-          tabBarIcon: () => <Text>Talk</Text>,
+          tabBarIcon: () => <Text>💬</Text>,
         }}
       />
       <Tabs.Screen
         name="Organise"
         options={{
           title: "Organise",
-          tabBarIcon: () => <Text>🏠</Text>,
+          tabBarIcon: () => <Text>🗃️</Text>,
+        }}
+      />
+      <Tabs.Screen
+        name="Analyse"
+        options={{
+          title: "Analyse",
+          tabBarIcon: () => <Text>📊</Text>,
         }}
       />
       <Tabs.Screen

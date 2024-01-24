@@ -8,9 +8,8 @@ import useWebSocket from 'react-use-websocket';
 const Index = () => {
   const segments = useSegments();
   const router = useRouter();
-  const { isLoggedIn,userData } = AuthStore.useState((s) => s);
+  const { isLoggedIn } = AuthStore.useState((s) => s);
   const navigationState = useRootNavigationState();
-  const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
 
   React.useEffect(() => {
     if (!navigationState?.key) return;

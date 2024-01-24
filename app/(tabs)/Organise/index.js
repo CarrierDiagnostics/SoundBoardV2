@@ -1,5 +1,5 @@
 import { Link, Redirect, Stack } from "expo-router";
-import { View, Text, ScrollView, Button,FlatList} from "react-native";
+import { View, Text, ScrollView, Button,FlatList, TouchableOpacity, PixelRatio, Dimensions, Platform } from "react-native";
 import { AuthStore } from "../../../store";
 import useWebSocket from 'react-use-websocket';
 import React from "react";
@@ -9,31 +9,63 @@ const TabOrganise = () => {
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
   const the_data = AuthStore.getRawState();
   const catData = the_data.oraganiseData;
-  const ButtonRow = () => {
+  const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
+  const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
+    'sad' : {"colour": "#6e79ff", "colourRGB":[110,121,255],"val":{"speechEmotion":1, "textEmotion":1}}, 
+    'angry' : {"colour": "#ff4313","colourRGB":[255,67,19], "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'fear' : {"colour": "#ff8c2d","colourRGB":[255,140,45], "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'disgust' : {"colour": "#e564df","colourRGB":[229,100,223], "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'surprise' : {"colour": "#24c9ff","colourRGB":[36,201,255], "val":{"speechEmotion":1, "textEmotion":1}}, 
+    'love' : {"colour": "#f3cec9","colourRGB":[243,206,201], "val":{"speechEmotion":1, "textEmotion":1}}};
+  
+  const catColours = sections.map((x,i) => ({"id":x, "colour":colours[i]}));
+  const {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+  } = Dimensions.get('window');
+  const scale = SCREEN_WIDTH / 320;
+  
+  function normalize(size) {
+    const newSize = size * scale 
+    if (Platform.OS === 'ios') {
+      return Math.round(PixelRatio.roundToNearestPixel(newSize))
+    } else {
+      return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
+    }
+  }
+
+  const renderItem = ({item}) => {
+    
     return(
-      <View>
-      {sections.map((x,idx) =>(
-        <Button
-          title={x}
-          onPress={catThought(this.title)}
-          key={idx}
-        />
-      ))}
+      <View style={{backgroundColor:"#efdb7aff", margin:"2%"}}>
+        <Text style={{borderBottomColor:"black",borderBottomWidth:3,fontSize: normalize(24), margin:"1%"}}>{item.title}</Text> 
+        <View style={{flexDirection:'row',flexWrap:'wrap'}}>
+        {catColours.map((x,idx) =>(
+          <TouchableOpacity 
+            onPress={() => catThought(item.id,x.id, item.index)}
+            key={idx}
+            style={{backgroundColor:x.colour, margin:"1%", padding:"2%"}}
+          >
+          <Text  style={{ fontSize: normalize(16)}} >{x.id}</Text>
+          </TouchableOpacity>
+        ))}
+        </View>
       </View>
     )
   }
-  
 
-  //<Text>{JSON.stringify(catData)}</Text>
-  function catThought(category){
+  function catThought(id,category, idx){
+    console.log("id = ",id, " cate = ",category, " idx =",idx);
     return
   }
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Stack.Screen options={{ headerShown: true, title: "Home" }} />
+      <Stack.Screen options={{ headerShown: true, title: "Organise Thoughts" }} />
       <FlatList
          data={catData}
-         renderItem={({item}) => <View><Text>{item.title}</Text> <ButtonRow/></View>}
+         renderItem={renderItem}
          keyExtractor={item => item.id}
       />
       

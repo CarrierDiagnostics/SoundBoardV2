@@ -52,11 +52,22 @@ export default function LogIn() {
   },[lastMessage]);
 
   async function setOrganiseData(userData){
-    console.log("the userdata = ",userData);
-    let catData = userData.data
+    let catData = userData.data;
+    let count = 0;
     let temp = [];
-    for (let [k,v] of Object.entries(catData)) temp.push({id:k, title:v.textBox.replace(/<bg>/g,"")})
+    let aTemp = {};
+    for (let [k,v] of Object.entries(catData)) {
+      if (v.hasOwnProperty("category")) {
+        //console.log("still in login",v);
+        aTemp[k] = v;
+        continue
+      }
+      if (v.textBox.replace(/<br>/g,"")== "sorry I didn't catch that") continue
+      temp.push({id:k, title:v.textBox.replace(/<br>/g,""), index:count, data:v}) //storing data twice, not very efficient
+      count++;
+    }
     AuthStore.update(s => {s.oraganiseData = temp});  
+    AuthStore.update(s=> {s.analysedData = aTemp});
   }
 
   function setEmotionData(userData){
@@ -138,7 +149,19 @@ export default function LogIn() {
   async function save(key, value) {
     await SecureStore.setItemAsync(key, value);
   }
-
+  async function getValueFor(key) {
+    let result = await SecureStore.getItemAsync(key);
+    if (result) {
+      var toSend = new Object();
+      toSend.action = "tokenLogin"; 
+      toSend.tempToken = result;
+      var jsonToSend = JSON.stringify(toSend);
+      sendMessage(jsonToSend);
+    }else{
+      console.log("securestore gave =",result);
+    }
+  }
+  getValueFor("tempToken");
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} childStyle={{margin: 30}}>
       <Stack.Screen options={{ title: "Login" }} />

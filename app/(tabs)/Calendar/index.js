@@ -4,7 +4,7 @@ import { AuthStore } from "../../../store";
 import { Calendar } from 'react-native-calendars';
 import React from "react";
 
-const Tab1Index = () => {
+const TabCalendar = () => {
   const the_data = AuthStore.getRawState();
   const [markedDates, setMarkedDates] = React.useState({});
   if (Object.keys(markedDates).length === 0){
@@ -14,11 +14,11 @@ const Tab1Index = () => {
     }
     setMarkedDates(temp);
   }
-  console.log(markedDates);
-  console.log(typeof markedDates);
+
   return (
     <View>
-        <Calendar markedDates={markedDates}/>
-      </View>);
+      <Stack.Screen options={{ headerShown: true, title: "Calendar" }} />
+      <Calendar markedDates={markedDates}/>
+    </View>);
 };
-export default Tab1Index;
+export default TabCalendar;

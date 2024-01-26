@@ -57,7 +57,7 @@ export default function LogIn() {
     let temp = [];
     let aTemp = {};
     for (let [k,v] of Object.entries(catData)) {
-      if (v.hasOwnProperty("category")) {
+      if (v.hasOwnProperty("category") && v["category"]) {
         //console.log("still in login",v);
         aTemp[k] = v;
         continue

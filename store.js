@@ -11,7 +11,7 @@ export const AuthStore = new Store({
   messages:null,
   markedDates:null,
   oraganiseData:[{id:1,title:"Getting things ready"}],
-  analysedData:null,
+  analysedData:null, //{id:{all the stuff}}
   tempToken:null,
 });
 

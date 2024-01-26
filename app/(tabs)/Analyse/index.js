@@ -3,13 +3,20 @@ import { Button, Pressable, Text, StyleSheet, View, ScrollView, Modal } from "re
 import { AuthStore } from "../../../store";
 import { VictoryPie} from "victory-native";
 import React from "react";
+import useWebSocket from 'react-use-websocket';
+import _ from "lodash";
 
 const TabAnalysis = () => {
   const router = useRouter();
+  const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
+
   const [seeModal, setSeeModal] = React.useState(false);
   const the_data = AuthStore.getRawState();
   const [mCat, setMCat] = React.useState(null);
-  const catData = the_data.analysedData;
+  var catData = the_data.analysedData;
+  var orgData = _.cloneDeep(the_data.oraganiseData);
+  console.log(orgData);
+  console.log(typeof orgData);
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
   const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
   var aData = {};
@@ -44,12 +51,32 @@ const TabAnalysis = () => {
       <Text>{item}</Text>
     )
   }
-  function removeAnalysis(k){
-
+  function removeAnalysis(id){ //change all of this, was taken from organise
+    var toSend = new Object();
+    toSend.action = "sort"; 
+    toSend.tempToken = the_data.tempToken;
+    toSend.category = false;
+    toSend.rantID = id;
+    var jsonToSend = JSON.stringify(toSend);
+    sendMessage(jsonToSend);
+    console.log("changing cat for",id);
+    catData[id].category = false;
+    let temp = {"data":catData[id]}
+    console.log("what I'm moving",catData[id]);
+    
+    AuthStore.update(s => {s.analysedData = catData});  
+    console.log("saved cat data");
+    orgData.push(temp)
+    console.log("added to orgdata")
+    AuthStore.update(s => {s.oraganiseData = orgData}); 
+    console.log("saved to org data"); 
+    delete catData[id];
+    console.log("deleting from current lsit")
+    //the_data = AuthStore.getRawState();
   }
   const ModalData = () =>{
     return(
-      <View style={styles.modal}>
+      <ScrollView >
         <Button   
            title="Close"   
            onPress = {() => {setSeeModal(false)}}  
@@ -64,7 +91,7 @@ const TabAnalysis = () => {
           </View>
         ))}
         
-      </View>
+      </ScrollView>
     )
   }
 

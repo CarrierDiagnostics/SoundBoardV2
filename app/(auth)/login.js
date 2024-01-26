@@ -10,14 +10,13 @@ import DateObject from "react-date-object";
 
 export default function LogIn() {
   var today = new DateObject().format("YYYY-MM-DD");
-  const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
   const router = useRouter();
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
   const [messageUser, setUserMessage] = React.useState('');
-  const [markedDates, setMarkedDates] = React.useState(today);
   const [messages, setMessages] = React.useState([]);
+  const [tempToken, setTempToken] = React.useState(null);
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -44,6 +43,7 @@ export default function LogIn() {
           s.readyState = readyState;
           s.messages = com[0];
           s.markedDates = com[1];
+          s.tempToken = e["tempToken"];
         });
         setOrganiseData(e.data)
         router.replace("/(tabs)/Talk");
@@ -132,6 +132,7 @@ export default function LogIn() {
       k = k[4]+"-"+k[2]+"-"+k[1];
       temp[k] = v;
     }
+    //temp = JSON.parse(JSON.stringify(temp).replace(/<br>/g,""));
     return(temp);
   }
 
@@ -152,6 +153,7 @@ export default function LogIn() {
   async function getValueFor(key) {
     let result = await SecureStore.getItemAsync(key);
     if (result) {
+      setTempToken(result);
       var toSend = new Object();
       toSend.action = "tokenLogin"; 
       toSend.tempToken = result;

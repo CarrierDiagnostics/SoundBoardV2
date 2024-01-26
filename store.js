@@ -12,6 +12,7 @@ export const AuthStore = new Store({
   markedDates:null,
   oraganiseData:[{id:1,title:"Getting things ready"}],
   analysedData:null,
+  tempToken:null,
 });
 
 registerInDevtools({AuthStore});

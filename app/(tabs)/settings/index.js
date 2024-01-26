@@ -1,9 +1,14 @@
 import { Redirect, Stack, useRouter } from "expo-router";
 import { Button, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AuthStore } from "../../../store";
+import * as SecureStore from 'expo-secure-store';
+
 
 const Tab2Index = () => {
   const router = useRouter();
+  async function save(key, value) {
+    await SecureStore.setItemAsync(key, value);
+  }
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Stack.Screen options={{ headerShown: true, title: "Settings" }} />
@@ -24,6 +29,7 @@ const Tab2Index = () => {
           AuthStore.update((s) => {
             s.isLoggedIn = false;
           });
+          save("tempToken", null);
           router.replace("/login");
         }}
         title="LOGOUT"

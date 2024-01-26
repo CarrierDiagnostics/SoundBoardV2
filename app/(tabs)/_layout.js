@@ -12,7 +12,7 @@ const TabsLayout = () => {
         name="Calendar"
         options={{
           title: "Calendar",
-          tabBarIcon: () => <Text>💬</Text>,
+          tabBarIcon: () => <Text>📅</Text>,
         }}
       />
       
@@ -44,6 +44,7 @@ const TabsLayout = () => {
           tabBarIcon: () => <Text>⚙️</Text>,
         }}
       />
+
     </Tabs>
   );
 };

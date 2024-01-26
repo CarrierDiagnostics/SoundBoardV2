@@ -3,12 +3,15 @@ import { View, Text, ScrollView, Button,FlatList, TouchableOpacity, PixelRatio, 
 import { AuthStore } from "../../../store";
 import useWebSocket from 'react-use-websocket';
 import React from "react";
+import _ from "lodash";
+import * as SecureStore from 'expo-secure-store';
 
 const TabOrganise = () => {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
-  const the_data = AuthStore.getRawState();
-  const catData = the_data.oraganiseData;
+  var the_data = AuthStore.getRawState();
+  const [catData, setCatData] = React.useState(_.cloneDeep(the_data.oraganiseData));
+  var analyseData = _.cloneDeep(the_data.analysedData);
   const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -35,7 +38,10 @@ const TabOrganise = () => {
       return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
     }
   }
-
+  async function getValueFor(key) {
+    let result = await SecureStore.getItemAsync(key);
+    console.log(result);
+  }
   const renderItem = ({item}) => {
     
     return(
@@ -44,7 +50,7 @@ const TabOrganise = () => {
         <View style={{flexDirection:'row',flexWrap:'wrap'}}>
         {catColours.map((x,idx) =>(
           <TouchableOpacity 
-            onPress={() => catThought(item.id,x.id, item.index)}
+            onPress={() => catThought(item,item.id,x.id, item.index)}
             key={idx}
             style={{backgroundColor:x.colour, margin:"1%", padding:"2%"}}
           >
@@ -56,8 +62,26 @@ const TabOrganise = () => {
     )
   }
 
-  function catThought(id,category, idx){
-    console.log("id = ",id, " cate = ",category, " idx =",idx);
+  function catThought(item, id,cat, idx){
+    
+    let temp = {};
+    temp[id] ={...item.data, "category":cat};
+    var toSend = new Object();
+    toSend.action = "sort"; 
+    //for (let [k,v] of Object.entries(the_data.userData)) console.log(k);
+    toSend.tempToken = the_data.tempToken;
+    toSend.category = cat;
+    toSend.rantID = id;
+    var jsonToSend = JSON.stringify(toSend);
+    sendMessage(jsonToSend);
+    Object.assign(analyseData, temp);
+    AuthStore.update(s => {s.analysedData = analyseData});  
+    the_index = catData.indexOf(item);
+    let tempCatdata = _.cloneDeep(catData);
+    tempCatdata.splice(the_index, 1);
+    setCatData(tempCatdata);
+    AuthStore.update(s => {s.oraganiseData = catData});  
+    the_data = AuthStore.getRawState();
     return
   }
   return (

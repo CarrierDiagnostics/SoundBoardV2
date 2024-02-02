@@ -5,6 +5,7 @@ import { VictoryPie} from "victory-native";
 import React from "react";
 import useWebSocket from 'react-use-websocket';
 import _ from "lodash";
+import styles from "../../../style";
 
 const TabAnalysis = () => {
   const router = useRouter();
@@ -76,21 +77,21 @@ const TabAnalysis = () => {
   }
   const ModalData = () =>{
     return(
-      <ScrollView >
-        <Button   
-           title="Close"   
-           onPress = {() => {setSeeModal(false)}}  
-        />  
+      <ScrollView style={styles.scrollContainer}>
+        
         {thoughtsData[mCat].map((x,idx) => (
-          <View key={idx}>
-            <Text>{x.text}</Text>
+          <View key={idx} style={styles.container}>
+            <Text style={styles.text}>{x.text}</Text>
             <Button   
               title="Remove"   
               onPress = {() => {removeAnalysis(x.id)}}  
             />  
           </View>
         ))}
-        
+        <Button   
+           title="Close"   
+           onPress = {() => {setSeeModal(false)}}  
+        />  
       </ScrollView>
     )
   }
@@ -98,20 +99,22 @@ const TabAnalysis = () => {
   const RenderSection =(d) =>{
     let idx = d.vars[1];
     let x = d.vars[0];
-    let t = "Breakdown "+ x.category;
+    let t = "See "+ x.category + " Thoughts";
     if (!x.breakdown) return
     return(
-      <View>
+      <View style={styles.container} >
         
-          <Text >{x.category} </Text>
+          <Text style={styles.text}>{x.category} </Text>
           <VictoryPie
+          padding={{ top: 50, bottom: -20, right: 0, left: 0 }}
             colorScale={colours}
             data={x.breakdown}
             startAngle={90}
             endAngle={-90}
             labelRadius={({ innerRadius }) => innerRadius + 15 }
             innerRadius={100}
-            style={{ labels: { fill: "white", fontSize: 20, fontWeight: "bold" } }}
+            height={400}
+            style={{ labels: { fill: "white", fontSize: 20, fontWeight: "bold" } , backgroundColor:"white" }}
           />
           <Modal 
            animationType = {"fade"}  
@@ -132,7 +135,7 @@ const TabAnalysis = () => {
   }
   return (
     <ScrollView style={{ flex: 1 }}>
-      <Stack.Screen options={{ headerShown: true, title: "Categorise" }} />
+      <Stack.Screen options={{ headerShown: true, title: "Categorise",  headerStyle : styles.header }} />
       
       {UNIQUEDATA.map((x,idx) => (
         <RenderSection key={x.key}  vars={[x,idx]}/>
@@ -143,28 +146,3 @@ const TabAnalysis = () => {
 };
 export default TabAnalysis;
 
-const styles = StyleSheet.create({  
-  container: {  
-    flex: 1,  
-    alignItems: 'center',  
-    justifyContent: 'center',  
-    backgroundColor: '#ecf0f1',  
-  },  
-  modal: {  
-  justifyContent: 'center',  
-  alignItems: 'center',   
-  backgroundColor : "#00BCD4",   
-  height: 300 ,  
-  width: '80%',  
-  borderRadius:10,  
-  borderWidth: 1,  
-  borderColor: '#fff',    
-  marginTop: 80,  
-  marginLeft: 40,  
-   
-   },  
-   text: {  
-      color: '#3f2949',  
-      marginTop: 10  
-   }  
-});  

@@ -10,20 +10,22 @@ import * as FileSystem from 'expo-file-system';
 import { useEffect, useRef } from "react";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
-
+import styles from "../../../style";
 
 
 
 const Tab1Index = () => {
   var today = new DateObject().format("YYYY-MM-DD");
   const chatRef = useRef();
-  const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
+  var {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const the_data = AuthStore.getRawState();
   const recImage = require('./assets/rec.png');
   const recStop = require('./assets/stoprec.png');
+  const tdAnim = require('./assets/threedotsanim.gif');
   const [recButton, changeRecState] = React.useState(recImage);
   const [recording, setRecording] = React.useState();
   const [messages, setMessages] = React.useState([]);
+  const [load, setLoading] =React.useState(false);
   if (messages.length == 0){
     let temp = [];
     for (let v of the_data.messages) temp.push(v);
@@ -40,10 +42,13 @@ const Tab1Index = () => {
     'surprise' : {"colour": "#24c9ff","colourRGB":[36,201,255], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'love' : {"colour": "#f3cec9","colourRGB":[243,206,201], "val":{"speechEmotion":1, "textEmotion":1}}};
 
+    
+
     useEffect(()=> {
       if (lastMessage && lastMessage.hasOwnProperty("data")){
         let LM = JSON.parse(lastMessage.data);
         if(LM.hasOwnProperty("result") && LM.result == "add text"){
+          setLoading(false);
           setMessages([...messages,
             MakeMsg(
               uuidv4(),
@@ -59,6 +64,7 @@ const Tab1Index = () => {
                 "AI Response"
               )
             ])
+            
             
        }
       }
@@ -90,6 +96,7 @@ const Tab1Index = () => {
     }else{
         changeRecState(recImage);
         stopRecording();
+        setLoading(true);
     }
   }
 
@@ -130,11 +137,19 @@ const Tab1Index = () => {
     sendMessage(theFile);
     
   }
-
+  function Loading(){
+    if (load){
+    return(
+      <Image 
+              style={{width:40,height:40, alignSelf:"flex-end"}} 
+              source={tdAnim}/>
+    )
+    }else{return}
+  }
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Stack.Screen options={{ headerShown: true, title: "Chat" }} />
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: true, title: "Chat", headerStyle : {backgroundColor: '#677ea3',} }} />
         <View style={{flex:0.9, alignSelf: 'stretch'}}>
           <GiftedChat
             messageContainerRef={chatRef}
@@ -144,12 +159,13 @@ const Tab1Index = () => {
             }}
             inverted={false}
             scrollToBottom={true}
-            style={{flex:0.1, alignSelf: 'stretch'}}
+            style={{flex:0.2, alignSelf: 'stretch'}}
             disableComposer={true}
             renderInputToolbar={() => { return null }}
             />
             
             <Text>ready state = {readyState}</Text>
+            <Loading/>
         </View>
         <View id="ButtonArea" style={{flex:0.2, alignSelf: 'stretch', alignItems: 'center'}}>
           <Pressable onPress={record} >

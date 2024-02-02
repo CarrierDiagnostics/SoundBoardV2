@@ -6,6 +6,7 @@ import React from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { v4 as uuidv4 } from 'uuid';
 import DateObject from "react-date-object";
+import styles from "../../style.js";
 
 
 export default function LogIn() {
@@ -165,33 +166,39 @@ export default function LogIn() {
   }
   getValueFor("tempToken");
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }} childStyle={{margin: 30}}>
+    <View style={styles.container} childStyle={styles.text}>
       <Stack.Screen options={{ title: "Login" }} />
-
       <TextInput
               onChangeText={email => onChangeEmail(email)}
               placeholder=" email"
               keyboardType="email-address"
+              placeholderTextColor="white" 
+              style={styles.textinput}
             />
       <TextInput secureTextEntry={true} 
               placeholder=" password"
-              onChangeText={password =>onChangePassword(password)} />
-      <Button label="LogIn" 
+              placeholderTextColor="white" 
+              onChangeText={password =>onChangePassword(password)}
+              style={styles.textinput}
+               />
+      <Button label="LogIn"
+      color={styles.container.color}
+            style={styles.container} 
             email={email} password={password} 
             onPress ={() => handleclick(email, password)}
             title="LogIn" >
             LogIn
       </Button>
-
-      <Text
-        onPress={() => {
-         
-          router.push("/create-account");
-        }}
-      >
+      <Text style={styles.text}>{messageUser}</Text>
+      
+      <View style={{ position: 'absolute', bottom: 10 }}>
+        <Text
+          onPress={() => {router.push("/create-account");}}
+          style={styles.text}
+        >
         Create Account
-      </Text>
-      <Text>{messageUser}</Text>
+        </Text>
+      </View>
     </View>
   );
 }

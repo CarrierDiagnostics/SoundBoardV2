@@ -5,6 +5,7 @@ import useWebSocket from 'react-use-websocket';
 import React from "react";
 import _ from "lodash";
 import * as SecureStore from 'expo-secure-store';
+import styles from "../../../style";
 
 const TabOrganise = () => {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
@@ -85,8 +86,8 @@ const TabOrganise = () => {
     return
   }
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Stack.Screen options={{ headerShown: true, title: "Organise Thoughts" }} />
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: true, title: "Organise Thoughts", headerStyle : styles.header  }} />
       <FlatList
          data={catData}
          renderItem={renderItem}

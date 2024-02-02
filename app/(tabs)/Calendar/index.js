@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { AuthStore } from "../../../store";
 import { Calendar } from 'react-native-calendars';
 import React from "react";
+import styles from "../../../style";
 
 const TabCalendar = () => {
   const the_data = AuthStore.getRawState();
@@ -16,8 +17,8 @@ const TabCalendar = () => {
   }
 
   return (
-    <View>
-      <Stack.Screen options={{ headerShown: true, title: "Calendar" }} />
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: true, title: "Calendar",  headerStyle : styles.header }} />
       <Calendar markedDates={markedDates}/>
     </View>);
 };

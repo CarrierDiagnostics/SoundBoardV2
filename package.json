@@ -37,7 +37,8 @@
     "react-native-web": "~0.18.7",
     "react-use-websocket": "^4.5.0",
     "victory-native": "^36.8.2",
-    "write-json-file": "^5.0.0"
+    "write-json-file": "^5.0.0",
+    "@react-native-picker/picker": "2.4.8"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

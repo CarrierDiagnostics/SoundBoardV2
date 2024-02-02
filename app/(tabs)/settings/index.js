@@ -2,46 +2,45 @@ import { Redirect, Stack, useRouter } from "expo-router";
 import { Button, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { AuthStore } from "../../../store";
 import * as SecureStore from 'expo-secure-store';
-
+import styles from "../../../style";
+import {Picker} from '@react-native-picker/picker';
+import React from "react";
+import langlist from "../../../langlist";
 
 const Tab2Index = () => {
   const router = useRouter();
+  const [selectedLanguage, setSelectedLanguage] = React.useState("English (United Kingdom)");
+
   async function save(key, value) {
     await SecureStore.setItemAsync(key, value);
   }
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Stack.Screen options={{ headerShown: true, title: "Settings" }} />
-      <Text style={{ fontFamily: "EncodeSansSemiCondensed_100Thin" }}>
-        EncodeSansSemiCondensed_100Thin
-      </Text>
-      <Text style={{ fontFamily: "EncodeSansSemiCondensed_300Light" }}>
-        EncodeSansSemiCondensed_300Light
-      </Text>
-      <Text style={{ fontFamily: "EncodeSansSemiCondensed_400Regular" }}>
-        EncodeSansSemiCondensed_400Regular
-      </Text>
-      <Text style={{ fontFamily: "EncodeSansSemiCondensed_700Bold" }}>
-        EncodeSansSemiCondensed_700Bold
-      </Text>
-      <Button
-        onPress={() => {
-          AuthStore.update((s) => {
-            s.isLoggedIn = false;
-          });
-          save("tempToken", null);
-          router.replace("/login");
-        }}
-        title="LOGOUT"
-      />
+    <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: true, title: "Settings", headerStyle : styles.header }} />
+      <Text style={styles.text}>Language</Text>
+      <Picker
+        style={styles.text}
+        selectedValue={selectedLanguage}
+        onValueChange={(itemValue, itemIndex) =>
+          setSelectedLanguage(itemValue)
+        }>
+        {Object.keys(langlist).map((x, idx) =>(
+          <Picker.Item label={x} value={x} key={idx}/>
+        ))}
+
+      </Picker>
+
 
       <Pressable
-        onPress={() => {alert('pressed')}}
+        onPress={() => {AuthStore.update((s) => { s.isLoggedIn = false;  });
+        save("tempToken", null);
+        router.replace("/login");
+      }}
         style={({pressed})=>[
           {    backgroundColor: pressed
-            ? '#920'
-            : "#818"},{
-          borderColor: "#920",
+            ? "#161b22"
+            :'#677ea3'},{
+          borderColor: "#677ea3",
           borderWidth: 1,
           borderStyle: "solid",
           borderRadius: 8,
@@ -49,14 +48,7 @@ const Tab2Index = () => {
           paddingVertical: 6,
         }]}
       >
-        <Text
-          style={{
-            fontFamily: "EncodeSansSemiCondensed_700Bold",
-            color: "white",
-          }}
-        >
-          Button
-        </Text>
+        <Text style={styles.text}>LogOut</Text>
       </Pressable>
     </View>
   );

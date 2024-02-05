@@ -18,6 +18,7 @@ export default function LogIn() {
   const [messageUser, setUserMessage] = React.useState('');
   const [messages, setMessages] = React.useState([]);
   const [tempToken, setTempToken] = React.useState(null);
+  var checkedTempToken = false;
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -105,7 +106,9 @@ export default function LogIn() {
               tHighNum = ve;
             }
           //if (tHighEmtion instanceof String) 
-          tmarkedDates[k] = {"selected": true, "selectedColor":emotionColours[tHighEmtion]["colour"]};
+          if (emotionColours.hasOwnProperty(tHighEmtion) && emotionColours[tHighEmtion].hasOwnProperty("colour")){
+            tmarkedDates[k] = {"selected": true, "selectedColor":emotionColours[tHighEmtion]["colour"]};
+          }
     
             
         }
@@ -153,7 +156,9 @@ export default function LogIn() {
   }
   async function getValueFor(key) {
     let result = await SecureStore.getItemAsync(key);
-    if (result) {
+    console.log("result = ", result);
+    if (result && !checkedTempToken) {
+      checkedTempToken = true;
       setTempToken(result);
       var toSend = new Object();
       toSend.action = "tokenLogin"; 
@@ -164,7 +169,7 @@ export default function LogIn() {
       console.log("securestore gave =",result);
     }
   }
-  getValueFor("tempToken");
+  if(!checkedTempToken)getValueFor("tempToken");
   return (
     <View style={styles.container} childStyle={styles.text}>
       <Stack.Screen options={{ title: "Login" }} />
@@ -191,7 +196,7 @@ export default function LogIn() {
       </Button>
       <Text style={styles.text}>{messageUser}</Text>
       
-      <View style={{ position: 'absolute', bottom: 10 }}>
+      <View style={{ position: 'absolute', top: 50 }}>
         <Text
           onPress={() => {router.push("/create-account");}}
           style={styles.text}

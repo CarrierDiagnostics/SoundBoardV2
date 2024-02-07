@@ -1,4 +1,4 @@
-import { TextInput, Text, View, Button } from "react-native";
+import { TextInput, Text, View, Button, Image } from "react-native";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -12,13 +12,16 @@ import styles from "../../style.js";
 export default function LogIn() {
   var today = new DateObject().format("YYYY-MM-DD");
   const router = useRouter();
+  const sblogo = require('../assets/SoundBoardLogo.png');
+
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
   const [messageUser, setUserMessage] = React.useState('');
   const [messages, setMessages] = React.useState([]);
   const [tempToken, setTempToken] = React.useState(null);
-  var checkedTempToken = false;
+  const the_data = AuthStore.getRawState();
+  const [checkedTempToken, setCheck] = React.useState(false);
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -32,7 +35,10 @@ export default function LogIn() {
   const { isLoggedIn,userData} = AuthStore.useState((s) => s);
   React.useEffect(() => {
     if(lastMessage){
+      console.log("lastmessage ",typeof(lastMessage.data));
+      console.log("lastmessage  = ", lastMessage.data);
       let e = JSON.parse(lastMessage.data);
+      console.log("lastmessage  = ", e);
       setUserMessage(e.result);
       if (e.result == "build webage"){
         save("tempToken", e["tempToken"]);
@@ -73,7 +79,7 @@ export default function LogIn() {
   }
 
   function setEmotionData(userData){
-    console.log("setEMotioNData should only be calledo nce");
+    console.log("setEMotioNData should only be calledo nce", userData);
     let tmarkedDates = {};  //Currently using textEmotion for emotion data, to change to prosody when ready. Also just using highest number to determine rants emotion and then median for days emotion
     let tDialogData = []; // for textBox and llmresponse
     let tSubsection = {title:null};
@@ -81,6 +87,8 @@ export default function LogIn() {
     let msg = {}
     let tID = 0;
     for (let [k,v] of Object.entries(userData)){
+          k = k.split("@")[0];
+          console.log(k);
           let tHighEmtion = 0;
           let tHighNum = 0;
   
@@ -131,9 +139,8 @@ export default function LogIn() {
   function cleanUserData(userData){
     let temp = {}
     for (let [k,v] of Object.entries(userData.data)){
-
       k = k.split(")")[1].split("_");
-      k = k[4]+"-"+k[2]+"-"+k[1];
+      k = k[4]+"-"+k[2]+"-"+k[1]+"@"+k[5]+":"+k[6]+":"+k[7];
       temp[k] = v;
     }
     //temp = JSON.parse(JSON.stringify(temp).replace(/<br>/g,""));
@@ -158,7 +165,7 @@ export default function LogIn() {
     let result = await SecureStore.getItemAsync(key);
     console.log("result = ", result);
     if (result && !checkedTempToken) {
-      checkedTempToken = true;
+      setCheck(true);
       setTempToken(result);
       var toSend = new Object();
       toSend.action = "tokenLogin"; 
@@ -169,10 +176,18 @@ export default function LogIn() {
       console.log("securestore gave =",result);
     }
   }
-  if(!checkedTempToken)getValueFor("tempToken");
+  //console.log("check temp = ", checkedTempToken, " and justLoogedout = ", the_data.ju)
+  if(!checkedTempToken && !the_data.justLoggedOut){
+    setCheck(true);
+    console.log("checked temp token is done ",checkedTempToken);
+    getValueFor("tempToken");
+  }
   return (
     <View style={styles.container} childStyle={styles.text}>
       <Stack.Screen options={{ title: "Login" }} />
+      <Image 
+              style={{ width:"100%"}} resizeMode="contain"
+              source={sblogo}/>
       <TextInput
               onChangeText={email => onChangeEmail(email)}
               placeholder=" email"
@@ -196,7 +211,7 @@ export default function LogIn() {
       </Button>
       <Text style={styles.text}>{messageUser}</Text>
       
-      <View style={{ position: 'absolute', top: 50 }}>
+      <View >
         <Text
           onPress={() => {router.push("/create-account");}}
           style={styles.text}

@@ -134,6 +134,7 @@ const TabAnalysis = () => {
     )
   }
   return (
+    <View style={styles.container}>
     <ScrollView style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: true, title: "Categorise",  headerStyle : styles.header }} />
       
@@ -142,6 +143,7 @@ const TabAnalysis = () => {
       ))
       }
     </ScrollView>
+    </View>
   );
 };
 export default TabAnalysis;

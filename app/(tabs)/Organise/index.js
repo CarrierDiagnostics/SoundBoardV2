@@ -55,7 +55,7 @@ const TabOrganise = () => {
             key={idx}
             style={{backgroundColor:x.colour, margin:"1%", padding:"2%"}}
           >
-          <Text  style={{ fontSize: normalize(16)}} >{x.id}</Text>
+          <Text key={idx} style={{ fontSize: normalize(16)}} >{x.id}</Text>
           </TouchableOpacity>
         ))}
         </View>

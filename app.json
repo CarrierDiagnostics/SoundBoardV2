@@ -5,6 +5,14 @@
       "bundler": "metro"
     },
     "name": "SoundBoard",
-    "slug": "SoundBoard"
+    "slug": "SoundBoard",
+    "extra": {
+      "eas": {
+        "projectId": "2eb5da0d-eacd-40db-b148-c28ca4977909"
+      }
+    },
+    "android": {
+      "package": "com.jcarrier.SoundBoard"
+    }
   }
 }

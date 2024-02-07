@@ -32,7 +32,7 @@ const Tab2Index = () => {
 
 
       <Pressable
-        onPress={() => {AuthStore.update((s) => { s.isLoggedIn = false;  });
+        onPress={() => {AuthStore.update((s) => { s.isLoggedIn = false; s.justLoggedOut = true; });
         save("tempToken", null);
         router.replace("/login");
       }}

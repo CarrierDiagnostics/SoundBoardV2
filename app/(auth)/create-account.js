@@ -1,5 +1,5 @@
 import { Text, View, TextInput, StyleSheet } from "react-native";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
 import useWebSocket from 'react-use-websocket';
@@ -13,6 +13,13 @@ export default function CreateAccount() {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
 
 
+  useEffect(() =>{
+    console.log(lastMessage)
+    if(lastMessage && lastMessage.hasOwnProperty("data")){
+      setResult(JSON.parse(lastMessage["data"])["result"]);
+      console.log(JSON.parse(lastMessage["data"])["result"]);
+    }
+  },[lastMessage]);
 
   function submitSignUp(){  
     console.log("click");
@@ -25,7 +32,7 @@ export default function CreateAccount() {
         console.log(toSend);
         sendMessage(jsonToSend);
         console.log("data sent");
-        setResult("Please check your email to validate.. your email");
+        
         
         
     }else{

@@ -13,6 +13,7 @@ export const AuthStore = new Store({
   oraganiseData:[{id:1,title:"Getting things ready"}],
   analysedData:null, //{id:{all the stuff}}
   tempToken:null,
+  justLoggedOut:false,
 });
 
 registerInDevtools({AuthStore});

@@ -14,7 +14,7 @@ import styles from "../../../style";
 
 
 
-const Tab1Index = () => {
+const Talk = () => {
   var today = new DateObject().format("YYYY-MM-DD");
   const chatRef = useRef();
   var {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
@@ -26,7 +26,9 @@ const Tab1Index = () => {
   const [recording, setRecording] = React.useState();
   const [messages, setMessages] = React.useState([]);
   const [load, setLoading] =React.useState(false);
-  if (messages.length == 0){
+  console.log("messages = ",the_data.messages);
+  console.log("lenght = ",the_data.messages.length )
+  if (messages.length == 0 && the_data.messages.length != 0){
     let temp = [];
     for (let v of the_data.messages) temp.push(v);
     setMessages(temp);
@@ -70,11 +72,11 @@ const Tab1Index = () => {
       }
     },[lastMessage]);
     
-    useEffect(() =>{
+    /*useEffect(() =>{
       if (chatRef && chatRef.current) {
         chatRef.current.scrollToEnd();
       }
-    });
+    });*/
 
 
   function MakeMsg(tLenght,text,the_date, uID, uName){
@@ -176,4 +178,4 @@ const Tab1Index = () => {
     </View>
   );
 };
-export default Tab1Index;
+export default Talk;

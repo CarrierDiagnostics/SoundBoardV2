@@ -64,6 +64,19 @@ const styles = StyleSheet.create({
   text:{
     color:"white",
     fontSize:20,
+  },
+  pressable:{    
+    backgroundColor: "#677ea3",
+    borderColor: "#677ea3",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginVertical:12,
+},
+  menu:{
+    fontSize: 35,
   }
 });
 

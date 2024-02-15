@@ -2,12 +2,13 @@ import { TextInput, Text, View, Button, Image } from "react-native";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { v4 as uuidv4 } from 'uuid';
 import DateObject from "react-date-object";
 import styles from "../../style.js";
-
+import * as FileSystem from 'expo-file-system';
+import _ from "lodash";
 
 export default function LogIn() {
   var today = new DateObject().format("YYYY-MM-DD");
@@ -35,10 +36,7 @@ export default function LogIn() {
   const { isLoggedIn,userData} = AuthStore.useState((s) => s);
   React.useEffect(() => {
     if(lastMessage){
-      console.log("lastmessage ",typeof(lastMessage.data));
-      console.log("lastmessage  = ", lastMessage.data);
       let e = JSON.parse(lastMessage.data);
-      console.log("lastmessage  = ", e);
       setUserMessage(e.result);
       if (e.result == "build webage"){
         save("tempToken", e["tempToken"]);
@@ -53,12 +51,32 @@ export default function LogIn() {
           s.markedDates = com[1];
           s.tempToken = e["tempToken"];
         });
+        
         setOrganiseData(e.data)
+        let raw = addCat(e.data);
+        writeJSON(raw, "raw");
+        writeJSON({"messages":com[0]}, "messages");
+        writeJSON({"markedDates":com[1]}, "markedDates");
         router.replace("/(tabs)/Talk");
       }
     }
   },[lastMessage]);
-
+  function addCat(raw){
+    let temp=_.cloneDeep(raw);
+    for (let [k,v] of Object.entries(raw.data)){
+      
+      if (!("category" in v)) {
+        temp.data[k]["category"]= null;
+      }else{temp.data[k] = v;} 
+    }
+ 
+    return temp;
+  }
+  async function writeJSON(exportData, fN){
+    await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + fN + "Data.json",
+      JSON.stringify(exportData)
+    )
+  }
   async function setOrganiseData(userData){
     let catData = userData.data;
     let count = 0;
@@ -88,7 +106,6 @@ export default function LogIn() {
     let tID = 0;
     for (let [k,v] of Object.entries(userData)){
           k = k.split("@")[0];
-          console.log(k);
           let tHighEmtion = 0;
           let tHighNum = 0;
   
@@ -163,7 +180,6 @@ export default function LogIn() {
   }
   async function getValueFor(key) {
     let result = await SecureStore.getItemAsync(key);
-    console.log("result = ", result);
     if (result && !checkedTempToken) {
       setCheck(true);
       setTempToken(result);
@@ -177,11 +193,12 @@ export default function LogIn() {
     }
   }
   //console.log("check temp = ", checkedTempToken, " and justLoogedout = ", the_data.ju)
-  if(!checkedTempToken && !the_data.justLoggedOut){
+  //if(!checkedTempToken && !the_data.justLoggedOut){
+  useEffect(() =>{
     setCheck(true);
     console.log("checked temp token is done ",checkedTempToken);
     getValueFor("tempToken");
-  }
+  },[])
   return (
     <View style={styles.container} childStyle={styles.text}>
       <Stack.Screen options={{ title: "Login" }} />

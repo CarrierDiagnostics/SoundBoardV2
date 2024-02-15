@@ -11,12 +11,15 @@ import { useEffect, useRef } from "react";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
 import styles from "../../../style";
+import _ from "lodash";
 
 
 
 const Talk = () => {
   var today = new DateObject().format("YYYY-MM-DD");
   const chatRef = useRef();
+  const [rData, setRData] = React.useState(null);
+
   var {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const the_data = AuthStore.getRawState();
   const recImage = require('./assets/rec.png');
@@ -25,15 +28,17 @@ const Talk = () => {
   const [recButton, changeRecState] = React.useState(recImage);
   const [recording, setRecording] = React.useState();
   const [messages, setMessages] = React.useState([]);
+  const [markedDates, setMarkedDates] = React.useState(null);
   const [load, setLoading] =React.useState(false);
-  console.log("messages = ",the_data.messages);
+  /*console.log("messages = ",the_data.messages);
   console.log("lenght = ",the_data.messages.length )
   if (messages.length == 0 && the_data.messages.length != 0){
     let temp = [];
     for (let v of the_data.messages) temp.push(v);
     setMessages(temp);
-  }
-  const markedDates = AuthStore.useState((s) => s.markedDates);
+  }*/
+  const [dataJson, setDataJson] = React.useState(null);
+ 
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -44,40 +49,57 @@ const Talk = () => {
     'surprise' : {"colour": "#24c9ff","colourRGB":[36,201,255], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'love' : {"colour": "#f3cec9","colourRGB":[243,206,201], "val":{"speechEmotion":1, "textEmotion":1}}};
 
-    
+    async function writeJSON(exportData, fN){
+      await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + fN + "Data.json",
+        JSON.stringify(exportData)
+      )
+    }
+    async function readJSON(fN){
+      var data = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + fN+ "Data.json");
+      return data
+    }
+  useEffect(() => {
+    readJSON("raw").then((result) => { setRData(JSON.parse(result));});
+    var rtemp = {};
+    readJSON("messages").then((result) => {
+      let temp = [];
+      result = JSON.parse(result);
+      for (let v of result.messages)temp.push(v);
+      setMessages(temp);
+    });
+  },[]);
+  
 
-    useEffect(()=> {
-      if (lastMessage && lastMessage.hasOwnProperty("data")){
-        let LM = JSON.parse(lastMessage.data);
-        if(LM.hasOwnProperty("result") && LM.result == "add text"){
-          setLoading(false);
-          setMessages([...messages,
+  useEffect(()=> {
+    if (lastMessage && lastMessage.hasOwnProperty("data")){
+      let LM = JSON.parse(lastMessage.data);
+      if(LM.hasOwnProperty("result") && LM.result == "add text"){
+        setLoading(false);
+        setMessages([...messages,
+          MakeMsg(
+            uuidv4(),
+            LM.data["textBox"].replace(/<br>/g,""),
+            new DateObject().format("YYYY-MM-DDTHH:mm:ss"),
+            1,
+            "User"),
             MakeMsg(
               uuidv4(),
-              LM.data["textBox"].replace(/<br>/g,""),
+              LM.data["llmresponse"],
               new DateObject().format("YYYY-MM-DDTHH:mm:ss"),
-              1,
-              "User"),
-              MakeMsg(
-                uuidv4(),
-                LM.data["llmresponse"],
-                new DateObject().format("YYYY-MM-DDTHH:mm:ss"),
-                2,
-                "AI Response"
-              )
-            ])
-            
-            
-       }
-      }
-    },[lastMessage]);
-    
-    /*useEffect(() =>{
-      if (chatRef && chatRef.current) {
-        chatRef.current.scrollToEnd();
-      }
-    });*/
+              2,
+              "AI Response"
+            )
+          ])
+          writeJSON({"messages":messages}, "messages");
+          if ("data" in rData){
+            let temp = _.cloneDeep(rData);
+            temp.data[LM.data.key] = LM.data;
+          writeJSON(temp, "raw");
+          }
 
+      }
+    }
+  },[lastMessage]);
 
   function MakeMsg(tLenght,text,the_date, uID, uName){
     return({
@@ -148,7 +170,6 @@ const Talk = () => {
     )
     }else{return}
   }
-
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: true, title: "Chat", headerStyle : {backgroundColor: '#677ea3',} }} />

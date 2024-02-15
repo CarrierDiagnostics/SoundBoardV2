@@ -6,6 +6,7 @@ const TabsLayout = () => {
   return (
     
     <Tabs
+      style={styles.menu}
       screenOptions={{
         headerShown: false,
       }}
@@ -14,7 +15,7 @@ const TabsLayout = () => {
         name="Calendar"
         options={{
           title: "Calendar",
-          tabBarIcon: () => <Text>📅</Text>,
+          tabBarIcon: () => <Text style={styles.menu}>📅</Text>,
         }}
       />
       
@@ -22,28 +23,28 @@ const TabsLayout = () => {
         name="Talk"
         options={{
           title: "Talk",
-          tabBarIcon: () => <Text>💬</Text>,
+          tabBarIcon: () => <Text style={styles.menu}>💬</Text>,
         }}
       />
       <Tabs.Screen
         name="Organise"
         options={{
           title: "Organise",
-          tabBarIcon: () => <Text>🗃️</Text>,
+          tabBarIcon: () => <Text style={styles.menu}>🗃️</Text>,
         }}
       />
       <Tabs.Screen
         name="Analyse"
         options={{
           title: "Analyse",
-          tabBarIcon: () => <Text>📊</Text>,
+          tabBarIcon: () => <Text style={styles.menu}>📊</Text>,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: () => <Text>⚙️</Text>,
+          tabBarIcon: () => <Text style={styles.menu}>⚙️</Text>,
         }}
       />
 

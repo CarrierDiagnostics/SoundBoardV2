@@ -10,9 +10,10 @@ import useWebSocket from 'react-use-websocket';
 
 const Tab2Index = () => {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = React.useState("English (United Kingdom)");
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   var the_data = AuthStore.getRawState();
+  const [selectedLanguage, setSelectedLanguage] = React.useState(the_data.language);
+
   const [seeModal, setSeeModal] = React.useState(false);
 
   const ModalData = () =>{
@@ -64,11 +65,15 @@ const Tab2Index = () => {
       <Picker
         style={styles.text}
         selectedValue={selectedLanguage}
-        onValueChange={(itemValue, itemIndex) =>
-          setSelectedLanguage(itemValue)
-        }>
+        onValueChange={(itemValue, itemIndex) => {
+          setSelectedLanguage(itemValue);
+          AuthStore.update((s) => {
+            s.language = itemValue});
+            console.log(itemValue);
+        }
+      }>
         {Object.keys(langlist).map((x, idx) =>(
-          <Picker.Item label={x} value={x} key={idx}/>
+          <Picker.Item label={x} value={langlist[x]} key={idx}/>
         ))}
 
       </Picker>

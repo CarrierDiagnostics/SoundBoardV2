@@ -151,10 +151,11 @@ const Talk = () => {
     );
     const uri = recording.getURI();
     let tempToken = await SecureStore.getItemAsync("tempToken");
+    console.log("sending lang = ",the_data.language)
     let toSend = {"userID":tempToken,
                   "browser":"app",
                   "action":"processVoice",
-                "LLM":true}
+                "LLM":true, "language": the_data.language}
     sendMessage(JSON.stringify(toSend));
     let fileOptions = {encoding: FileSystem.EncodingType.Base64};
     let theFile = await FileSystem.readAsStringAsync(uri, fileOptions );

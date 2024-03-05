@@ -50,6 +50,7 @@ export default function LogIn() {
           s.messages = com[0];
           s.markedDates = com[1];
           s.tempToken = e["tempToken"];
+          s.language = e["language"];
         });
         
         setOrganiseData(e.data)

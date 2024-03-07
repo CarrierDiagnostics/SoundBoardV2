@@ -193,6 +193,15 @@ export default function LogIn() {
       console.log("securestore gave =",result);
     }
   }
+
+  function forgotPassword(){
+    var toSend = new Object();
+    toSend.action = "forgotPassword"; 
+    toSend.email = email;
+    var jsonToSend = JSON.stringify(toSend);
+    sendMessage(jsonToSend);
+    setUserMessage("Please check the email of ",email);
+}
   //console.log("check temp = ", checkedTempToken, " and justLoogedout = ", the_data.ju)
   //if(!checkedTempToken && !the_data.justLoggedOut){
   useEffect(() =>{
@@ -230,6 +239,12 @@ export default function LogIn() {
       <Text style={styles.text}>{messageUser}</Text>
       
       <View >
+      <Text
+          onPress={() => {forgotPassword();}}
+          style={styles.text}
+        >
+        Forgot Password
+        </Text>
         <Text
           onPress={() => {router.push("/create-account");}}
           style={styles.text}

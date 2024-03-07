@@ -4,6 +4,7 @@
     "web": {
       "bundler": "metro"
     },
+    "version": "1.0.2",
     "name": "SoundBoard",
     "slug": "SoundBoard",
     "extra": {
@@ -12,7 +13,11 @@
       }
     },
     "android": {
-      "package": "com.jcarrier.SoundBoard"
+      "package": "com.jcarrier.SoundBoard",
+      "versionCode": 3
+    },
+    "ios": {
+      "bundleIdentifier": "com.jcarrier.SoundBoard"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { TextInput, Text, View, Button, Image, ScrollView, ImageBackground } from "react-native";
+import { TextInput, Text, View, Button, Image, ScrollView, ImageBackground, KeyboardAwareScrollView } from "react-native";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -210,7 +210,7 @@ export default function LogIn() {
     getValueFor("tempToken");
   },[])
   return (
-    <View style={styles.container} childStyle={styles.text}>
+    <KeyboardAwareScrollView style={styles.container} childStyle={styles.text}>
       <ImageBackground source={BG} style={styles.BGimage}>
       <Stack.Screen options={{ title: "Login" }} />
       <Image 
@@ -254,7 +254,7 @@ export default function LogIn() {
         </Text>
       </View>
       </ImageBackground>
-    </View>
+    </KeyboardAwareScrollView>
     
   );
 }

@@ -89,6 +89,10 @@ export default function CreateAccount() {
         Create Account
       </Text>
       <Text>{result}</Text>
+      <Text
+          onPress={() => {router.push("/login");}}
+          style={styles.text}
+        >Back</Text>
     </View>
   );
 }

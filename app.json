@@ -17,6 +17,9 @@
       "versionCode": 3
     },
     "ios": {
+      "infoPlist":{
+        "NSMicrophoneUsageDescription": "Enable Microphone Access to perform Speech to text and prosody analysis"
+      },
       "bundleIdentifier": "com.jcarrier.SoundBoard"
     }
   }

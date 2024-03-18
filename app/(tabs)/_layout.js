@@ -3,12 +3,19 @@ import { Text, View } from "react-native";
 import styles from "../../style";
 
 const TabsLayout = () => {
+  const navTheme = {
+    colors: {
+      background: "#171717"
+    }
+  };
   return (
-    
     <Tabs
       style={styles.menu}
       screenOptions={{
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#ccb1aa',
+        },
       }}
     >
       <Tabs.Screen
@@ -49,7 +56,7 @@ const TabsLayout = () => {
       />
 
     </Tabs>
- 
+  
   );
 };
 

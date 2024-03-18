@@ -1,5 +1,5 @@
 import { Link, Redirect, Stack } from "expo-router";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, ImageBackground,SafeAreaView, Modal} from "react-native";
 import { AuthStore } from "../../../store";
 import { Audio } from 'expo-av';
 import { GiftedChat } from 'react-native-gifted-chat'
@@ -19,12 +19,17 @@ const Talk = () => {
   var today = new DateObject().format("YYYY-MM-DD");
   const chatRef = useRef();
   const [rData, setRData] = React.useState(null);
+  const [seeModal, setSeeModal] = React.useState(false);
+  const [seeReconnectModal, setSeeReconnectModal] = React.useState(false);
 
-  var {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
+  const [socketUrl, setSocketUrl] = React.useState('wss://carriertech.uk:8008/');
+  const {sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
   const the_data = AuthStore.getRawState();
-  const recImage = require('./assets/rec.png');
-  const recStop = require('./assets/stoprec.png');
-  const tdAnim = require('./assets/threedotsanim.gif');
+  const recImage = require('../../assets/rec.png')  //'./assets/rec.png');
+  const recStop = require('../../assets/stoprec.png');
+  const tdAnim = require('../../assets/threedotsanim.gif');
+  const BG = require("../../assets/BG.jpg");
+
   const [recButton, changeRecState] = React.useState(recImage);
   const [recording, setRecording] = React.useState();
   const [messages, setMessages] = React.useState([]);
@@ -69,7 +74,16 @@ const Talk = () => {
     });
   },[]);
   
-
+  useEffect(() => {
+    readJSON("raw").then((result) => { setRData(JSON.parse(result));});
+    var rtemp = {};
+    readJSON("messages").then((result) => {
+      let temp = [];
+      result = JSON.parse(result);
+      for (let v of result.messages)temp.push(v);
+      setMessages(temp);
+    });
+  },[]);
   useEffect(()=> {
     if (lastMessage && lastMessage.hasOwnProperty("data")){
       let LM = JSON.parse(lastMessage.data);
@@ -101,6 +115,22 @@ const Talk = () => {
     }
   },[lastMessage]);
 
+  const reconnectModal = () =>{
+   
+    return(
+      
+      <View style={styles.container}>
+        <Button   
+           title="Recoonect"   
+           onPress = {() => {reconnect()}}  
+        />  
+      </View>
+    )
+  }
+  function reconnect(){
+    setSocketUrl('wss://carriertech.uk:8008/');
+    setSeeReconnectModal(false)
+  }
   function MakeMsg(tLenght,text,the_date, uID, uName){
     return({
       _id: tLenght,
@@ -171,9 +201,20 @@ const Talk = () => {
     )
     }else{return}
   }
+
+  const ModalData = () =>{
+   
+    return(
+      <ScrollView style={styles.scrollContainer}>
+      //PUT STUFF HERE!
+      </ScrollView>
+    )
+  }
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: "Chat", headerStyle : {backgroundColor: '#677ea3',} }} />
+    <ImageBackground source={BG} style={styles.BGimage}>
+    <SafeAreaView  style={styles.container}>
+      
+      <Stack.Screen options={{ headerShown: false, title: "Chat", headerStyle : {backgroundColor: '#00000000',} }} />
         <View style={{flex:0.9, alignSelf: 'stretch'}}>
           <GiftedChat
             messageContainerRef={chatRef}
@@ -189,6 +230,7 @@ const Talk = () => {
             />
             
             <Text>ready state = {readyState}</Text>
+            {readyState === 3 && setSeeReconnectModal(true)}
             <Loading/>
         </View>
         <View id="ButtonArea" style={{flex:0.2, alignSelf: 'stretch', alignItems: 'center'}}>
@@ -197,7 +239,15 @@ const Talk = () => {
           </Pressable>
           
         </View>
-    </View>
+        <Modal 
+           animationType = {"fade"}  
+           transparent = {false}  
+           visible = {seeReconnectModal}  
+           >  
+            <reconnectModal />
+          </Modal>
+    </SafeAreaView >
+    </ImageBackground>
   );
 };
 export default Talk;

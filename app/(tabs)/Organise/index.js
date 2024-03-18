@@ -1,5 +1,5 @@
 import { Link, Redirect, Stack, useNavigation } from "expo-router";
-import { View, Text, ScrollView, Button,FlatList, TouchableOpacity, PixelRatio, Dimensions, Platform } from "react-native";
+import { View, Text, ScrollView, Button,FlatList, TouchableOpacity, PixelRatio, Dimensions, Platform, ImageBackground } from "react-native";
 import { AuthStore } from "../../../store";
 import useWebSocket from 'react-use-websocket';
 import React, {useEffect, useMemo} from "react";
@@ -32,7 +32,8 @@ const TabOrganise = () => {
     height: SCREEN_HEIGHT,
   } = Dimensions.get('window');
   const scale = SCREEN_WIDTH / 320;
-  
+  const BG = require("../../assets/BG.jpg");
+
   function normalize(size) {
     const newSize = size * scale 
     if (Platform.OS === 'ios') {
@@ -103,8 +104,9 @@ const TabOrganise = () => {
     for ( let [k,v] of Object.entries(rData.data)) {temp.push(v);}
 
     return (
+      <ImageBackground source={BG} style={styles.BGimage}>
       <View style={styles.container}>
-        <Stack.Screen options={{ headerShown: true, title: "Organise Thoughts", headerStyle : styles.header  }} />
+        <Stack.Screen options={{ headerShown: false, title: "Organise Thoughts", headerStyle : styles.header  }} />
         <FlatList
           data={temp}
           renderItem={renderItem}
@@ -112,6 +114,7 @@ const TabOrganise = () => {
         />
         
       </View>
+      </ImageBackground>
     );
   }
 };

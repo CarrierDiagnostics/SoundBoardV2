@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, StatusBar } from 'react-native';
 
 const styles = StyleSheet.create({
   text: {
@@ -7,6 +7,11 @@ const styles = StyleSheet.create({
     margin:30,
     padding:30,
     justifyContent:"center",
+  },
+  BGimage: {
+    flex: 1,
+    resizeMode: 'stretch',
+    justifyContent: 'center',
   },
   textBottom: {
     textDecorationColor:"white",
@@ -30,10 +35,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
-    backgroundColor: '#161b22',
+    backgroundColor: '#00000000',
     justifyContent: "center", 
     alignItems: "stretch",
     textDecorationColor:"white",
+    marginTop:StatusBar.currentHeight
   },
   scrollContainer:{
     flex: 1,
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
     flex: 1,  
     alignItems: 'center',  
     justifyContent: 'center',  
-    backgroundColor: '#677ea3', 
+    backgroundColor: '#00000000', 
     textDecorationColor:"white",
     color:"white", 
   }, 
@@ -77,6 +83,7 @@ const styles = StyleSheet.create({
 },
   menu:{
     fontSize: 35,
+    backgroundColor:"#00000000"
   }
 });
 

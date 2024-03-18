@@ -1,5 +1,5 @@
 import { Redirect, Stack, useRouter,Link, usePathname } from "expo-router";
-import { Button, Pressable, Text, StyleSheet, View, ScrollView, Modal } from "react-native";
+import { Button, Pressable, Text, StyleSheet, View, ScrollView, Modal, ImageBackground , SafeAreaView} from "react-native";
 import { AuthStore } from "../../../store";
 import { VictoryPie} from "victory-native";
 import React, {useEffect} from "react";
@@ -20,6 +20,7 @@ const TabAnalysis = () => {
   var temp = {};
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
   const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
+  const BG = require("../../assets/BG.jpg");
 
 
   async function writeJSON(exportData, fN){
@@ -64,6 +65,7 @@ const TabAnalysis = () => {
   const ModalData = () =>{
    
     return(
+      
       <ScrollView style={styles.scrollContainer}>
         <Text style={styles.text}>{modalCat}</Text>
         {temp[modalCat].map((x,idx) => (
@@ -113,7 +115,7 @@ const TabAnalysis = () => {
             labelRadius={({ innerRadius }) => innerRadius + 15 }
             innerRadius={100}
             height={400}
-            style={{ labels: { fill: "white", fontSize: 20, fontWeight: "bold" } , backgroundColor:"white" }}
+            style={{ labels: { fill: "white", fontSize: 20, fontWeight: "bold" } , backgroundColor:"#00000000" }}
           />
           <Modal 
            animationType = {"fade"}  
@@ -145,16 +147,22 @@ const TabAnalysis = () => {
     }
     //setCatData(temp);
     return (
-      <View style={styles.container}>
+      <ImageBackground source={BG} style={styles.BGimage}>
+      <SafeAreaView style={styles.container}>
+      
+      
       <ScrollView style={{ flex: 1 }}>
-        <Stack.Screen options={{ headerShown: true, title: "Categorise",  headerStyle : styles.header }} />
+        <Stack.Screen options={{ headerShown: false, title: "Categorise",  headerStyle : {backgroundColor: '#00000000',} }} />
         
         {Object.keys(temp).map((k,idx) => (
           <RenderSection key={temp[k].key}  vars={[temp[k],idx]}/>
         ))
         }
       </ScrollView>
-      </View>
+      
+      
+      </SafeAreaView>
+      </ImageBackground>
     );
     }
 };

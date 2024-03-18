@@ -1,5 +1,5 @@
 import { Redirect, Stack, useRouter } from "expo-router";
-import { Button, Pressable, Text, TouchableOpacity, View, Modal } from "react-native";
+import { Button, Pressable, Text, TouchableOpacity, View, Modal, ImageBackground, SafeAreaView } from "react-native";
 import { AuthStore } from "../../../store";
 import * as SecureStore from 'expo-secure-store';
 import styles from "../../../style";
@@ -13,11 +13,13 @@ const Tab2Index = () => {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   var the_data = AuthStore.getRawState();
   const [selectedLanguage, setSelectedLanguage] = React.useState(the_data.language);
+  const BG = require("../../assets/BG.jpg");
 
   const [seeModal, setSeeModal] = React.useState(false);
 
   const ModalData = () =>{
     return(
+      
       <View style={styles.container}>
         <Pressable
           onPress={() => {
@@ -59,8 +61,10 @@ const Tab2Index = () => {
    
   }
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ headerShown: true, title: "Settings", headerStyle : styles.header }} />
+    <ImageBackground source={BG} style={styles.BGimage}>
+
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false, title: "Settings", headerStyle : styles.header }} />
       <Text style={styles.text}>Language</Text>
       <Picker
         style={styles.text}
@@ -110,7 +114,8 @@ const Tab2Index = () => {
            onRequestClose = {() =>{ console.log("Modal has been closed.") } }> 
            <ModalData/> 
       </Modal>
-    </View>
+    </SafeAreaView>
+    </ImageBackground>
   );
 };
 export default Tab2Index;

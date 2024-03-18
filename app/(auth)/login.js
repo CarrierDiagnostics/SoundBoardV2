@@ -1,4 +1,4 @@
-import { TextInput, Text, View, Button, Image } from "react-native";
+import { TextInput, Text, View, Button, Image, ScrollView, ImageBackground } from "react-native";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -14,7 +14,7 @@ export default function LogIn() {
   var today = new DateObject().format("YYYY-MM-DD");
   const router = useRouter();
   const sblogo = require('../assets/SoundBoardLogo.png');
-
+  const BG = require("../assets/BG.jpg");
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
@@ -211,6 +211,7 @@ export default function LogIn() {
   },[])
   return (
     <View style={styles.container} childStyle={styles.text}>
+      <ImageBackground source={BG} style={styles.BGimage}>
       <Stack.Screen options={{ title: "Login" }} />
       <Image 
               style={{ width:"100%"}} resizeMode="contain"
@@ -252,6 +253,8 @@ export default function LogIn() {
         Create Account
         </Text>
       </View>
+      </ImageBackground>
     </View>
+    
   );
 }

@@ -12,6 +12,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
 import styles from "../../../style";
 import _ from "lodash";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 
@@ -20,10 +21,12 @@ const Talk = () => {
   const chatRef = useRef();
   const [rData, setRData] = React.useState(null);
   const [seeModal, setSeeModal] = React.useState(false);
-  const [seeReconnectModal, setSeeReconnectModal] = React.useState(false);
-
-  const [socketUrl, setSocketUrl] = React.useState('wss://carriertech.uk:8008/');
-  const {sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
+  const [connectURL, setConnectURL] = React.useState('wss://carriertech.uk:8008/')
+  const [socketUrl, setSocketUrl] = React.useState(connectURL);
+  const {sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
+        onOpen: () => console.log('opened'),
+        shouldReconnect: (closeEvent) => true,
+      });
   const the_data = AuthStore.getRawState();
   const recImage = require('../../assets/rec.png')  //'./assets/rec.png');
   const recStop = require('../../assets/stoprec.png');
@@ -83,7 +86,10 @@ const Talk = () => {
       for (let v of result.messages)temp.push(v);
       setMessages(temp);
     });
-  },[]);
+  },[]); 
+
+  
+
   useEffect(()=> {
     if (lastMessage && lastMessage.hasOwnProperty("data")){
       let LM = JSON.parse(lastMessage.data);
@@ -115,22 +121,6 @@ const Talk = () => {
     }
   },[lastMessage]);
 
-  const reconnectModal = () =>{
-   
-    return(
-      
-      <View style={styles.container}>
-        <Button   
-           title="Recoonect"   
-           onPress = {() => {reconnect()}}  
-        />  
-      </View>
-    )
-  }
-  function reconnect(){
-    setSocketUrl('wss://carriertech.uk:8008/');
-    setSeeReconnectModal(false)
-  }
   function MakeMsg(tLenght,text,the_date, uID, uName){
     return({
       _id: tLenght,
@@ -202,6 +192,8 @@ const Talk = () => {
     }else{return}
   }
 
+ 
+
   const ModalData = () =>{
    
     return(
@@ -230,22 +222,16 @@ const Talk = () => {
             />
             
             <Text>ready state = {readyState}</Text>
-            {readyState === 3 && setSeeReconnectModal(true)}
+            
             <Loading/>
         </View>
         <View id="ButtonArea" style={{flex:0.2, alignSelf: 'stretch', alignItems: 'center'}}>
-          <Pressable onPress={record} >
+          <TouchableOpacity onPressOut={record} >
             <Image  source={recButton} style={{ height:"100%"}} resizeMode="contain"/>
-          </Pressable>
+          </TouchableOpacity>
           
         </View>
-        <Modal 
-           animationType = {"fade"}  
-           transparent = {false}  
-           visible = {seeReconnectModal}  
-           >  
-            <reconnectModal />
-          </Modal>
+       
     </SafeAreaView >
     </ImageBackground>
   );

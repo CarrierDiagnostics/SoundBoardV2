@@ -12,7 +12,7 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
 import styles from "../../../style";
 import _ from "lodash";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 
 
@@ -32,19 +32,15 @@ const Talk = () => {
   const recStop = require('../../assets/stoprec.png');
   const tdAnim = require('../../assets/threedotsanim.gif');
   const BG = require("../../assets/BG.jpg");
+  const Q = require("../../assets/q.png");
+  const Q1 = require("../../assets/q1.png");
+  const Q2 = require("../../assets/q2.png");
 
   const [recButton, changeRecState] = React.useState(recImage);
   const [recording, setRecording] = React.useState();
   const [messages, setMessages] = React.useState([]);
   const [markedDates, setMarkedDates] = React.useState(null);
   const [load, setLoading] =React.useState(false);
-  /*console.log("messages = ",the_data.messages);
-  console.log("lenght = ",the_data.messages.length )
-  if (messages.length == 0 && the_data.messages.length != 0){
-    let temp = [];
-    for (let v of the_data.messages) temp.push(v);
-    setMessages(temp);
-  }*/
   const [dataJson, setDataJson] = React.useState(null);
  
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -197,17 +193,33 @@ const Talk = () => {
   const ModalData = () =>{
    
     return(
-      <ScrollView style={styles.scrollContainer}>
-      //PUT STUFF HERE!
-      </ScrollView>
+      <View>
+       
+       
+       <Pressable
+          onPress={() => {
+            setSeeModal(false);
+            }}
+          style={styles.pressable}>
+          <Text style={styles.text}>Close</Text>
+        </Pressable>
+        <Text>To start, just press the record button</Text>
+       
+        <Text>Say what's on your mind, and press again.</Text>
+        <Text>You can also oragnise your thoughts and see the analysis of emotions based on categories</Text>
+      </View>
     )
   }
   return (
     <ImageBackground source={BG} style={styles.BGimage}>
     <SafeAreaView  style={styles.container}>
-      
+      <Pressable style={{backgroundColor:"#00000000", flex:0.05, alignItems: 'flex-end'}}
+        onPress={() => {setSeeModal(true)}}>
+        <Image  source={Q} style={{backgroundColor:"#00000000", position:"absolute",right:0, height:"100%", width:"10%"}} resizeMode="contain"/>
+      </Pressable>
       <Stack.Screen options={{ headerShown: false, title: "Chat", headerStyle : {backgroundColor: '#00000000',} }} />
         <View style={{flex:0.9, alignSelf: 'stretch'}}>
+          
           <GiftedChat
             messageContainerRef={chatRef}
             messages={messages}
@@ -231,7 +243,13 @@ const Talk = () => {
           </TouchableOpacity>
           
         </View>
-       
+        <Modal 
+           animationType = {"fade"}  
+           transparent = {false}  
+           visible = {seeModal}  
+           onRequestClose = {() =>{ console.log("Modal has been closed.") } }> 
+           <ModalData/> 
+      </Modal>
     </SafeAreaView >
     </ImageBackground>
   );

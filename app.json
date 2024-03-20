@@ -18,7 +18,7 @@
     },
     "ios": {
       "infoPlist":{
-        "NSMicrophoneUsageDescription": "Enable Microphone Access to perform Speech to text and prosody analysis"
+        "NSMicrophoneUsageDescription": "Enable Microphone Access to perform Speech to text and prosody analysis to get insight on your emotional state. At any time you can go to settings and delete all your data!"
       },
       "bundleIdentifier": "com.jcarrier.SoundBoard"
     }

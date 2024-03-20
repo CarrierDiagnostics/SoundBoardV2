@@ -6,6 +6,7 @@
     },
     "version": "1.0.3",
     "name": "SoundBoard",
+    "icon":"icon.png",
     "slug": "SoundBoard",
     "extra": {
       "eas": {

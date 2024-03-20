@@ -233,7 +233,7 @@ const Talk = () => {
             renderInputToolbar={() => { return null }}
             />
             
-            <Text>ready state = {readyState}</Text>
+            
             
             <Loading/>
         </View>

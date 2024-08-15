@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "version": "1.0.3",
+    "name": "SoundBoard",
+    "icon":"icon.png",
+    "slug": "SoundBoard",
+    "extra": {
+      "eas": {
+        "projectId": "2eb5da0d-eacd-40db-b148-c28ca4977909"
+      }
+    },
+    "android": {
+      "package": "com.jcarrier.SoundBoard",
+      "versionCode": 3
+    },
+    "ios": {
+      "infoPlist":{
+        "NSMicrophoneUsageDescription": "Enable Microphone Access to perform Speech to text and prosody analysis to get insight on your emotional state. At any time you can go to settings and delete all your data!"
+      },
+      "bundleIdentifier": "com.jcarrier.SoundBoard"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { TextInput, Text, View, Button, Image, ScrollView, ImageBackground } from "react-native";
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { API_URL } from '../../const';
 
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
@@ -17,7 +18,7 @@ export default function LogIn() {
   const router = useRouter();
   const sblogo = require('../assets/SoundBoardLogo.png');
   const BG = require("../assets/BG.jpg");
-  const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
+  const {sendMessage, lastMessage, readyState } = useWebSocket(API_URL);
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
   const [messageUser, setUserMessage] = React.useState('');
@@ -168,11 +169,12 @@ export default function LogIn() {
   }
 
   function handleclick(email, password){
-    console.log("handled click");
+    console.log("handled click to ", readyState);
     if (email && password){
       let toSend = {"email":email,
                     "password":password,
                     "action":"LogIn"}
+      console.log("sending =", toSend)
       sendMessage(JSON.stringify(toSend));
     }else{
       alert("somethiogn is null");
@@ -182,7 +184,9 @@ export default function LogIn() {
     await SecureStore.setItemAsync(key, value);
   }
   async function getValueFor(key) {
+    console.log("got here ", key);
     let result = await SecureStore.getItemAsync(key);
+    console.log("got here2");
     if (result && !checkedTempToken) {
       setCheck(true);
       setTempToken(result);
@@ -233,14 +237,19 @@ export default function LogIn() {
               onChangeText={password =>onChangePassword(password)}
               style={styles.textinput}
                />
-      <Button label="LogIn"
-      color={styles.container.color}
-            style={styles.container} 
-            email={email} password={password} 
-            onPress ={() => handleclick(email, password)}
-            title="LogIn" >
-            LogIn
-      </Button>
+      {readyState===ReadyState.OPEN ? (
+        <Button label="LogIn"
+        color={styles.container.color}
+              style={styles.container} 
+              email={email} password={password} 
+              onPress ={() => handleclick(email, password)}
+              title="LogIn" >
+              LogIn
+        </Button>
+      ) : (
+        <Text>Establishing Connection {readyState}</Text>
+      )}
+      
       <Text style={styles.text}>{messageUser}</Text>
       
       <View >

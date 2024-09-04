@@ -12,7 +12,8 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
 import styles from "../../../style";
 import _ from "lodash";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { FlatList, ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { API_URL } from '../../../const';
 
 
 
@@ -21,7 +22,7 @@ const Talk = () => {
   const chatRef = useRef();
   const [rData, setRData] = React.useState(null);
   const [seeModal, setSeeModal] = React.useState(false);
-  const [connectURL, setConnectURL] = React.useState('wss://carriertech.uk:8008/')
+  const [connectURL, setConnectURL] = React.useState(API_URL)
   const [socketUrl, setSocketUrl] = React.useState(connectURL);
   const {sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
         onOpen: () => console.log('opened'),
@@ -42,7 +43,9 @@ const Talk = () => {
   const [markedDates, setMarkedDates] = React.useState(null);
   const [load, setLoading] =React.useState(false);
   const [dataJson, setDataJson] = React.useState(null);
- 
+  const [seeConvo, setSeeConvo] = React.useState(false);
+  const [convo, setConvo] = React.useState(null);
+
   const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
     'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
     'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
@@ -62,16 +65,7 @@ const Talk = () => {
       var data = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + fN+ "Data.json");
       return data
     }
-  useEffect(() => {
-    readJSON("raw").then((result) => { setRData(JSON.parse(result));});
-    var rtemp = {};
-    readJSON("messages").then((result) => {
-      let temp = [];
-      result = JSON.parse(result);
-      for (let v of result.messages)temp.push(v);
-      setMessages(temp);
-    });
-  },[]);
+  
   
   useEffect(() => {
     readJSON("raw").then((result) => { setRData(JSON.parse(result));});
@@ -170,6 +164,7 @@ const Talk = () => {
     console.log("sending lang = ",the_data.language)
     let toSend = {"userID":tempToken,
                   "browser":"app",
+                  "convo":convo,
                   "action":"processVoice",
                 "LLM":true, "language": the_data.language}
     sendMessage(JSON.stringify(toSend));
@@ -187,8 +182,35 @@ const Talk = () => {
     )
     }else{return}
   }
-
- 
+  const renderConvos = ({item}) =>{
+    return(
+      <Pressable
+      onPress={() => {
+        setConvo(item.key);
+        }}
+      style={styles.pressable}>
+        <Text>{item.summation}</Text>
+      </Pressable>
+    )
+  }
+  const chosenChat = () =>{
+    return (
+      <View>
+      <GiftedChat
+            messageContainerRef={chatRef}
+            messages={messages}
+            user={{
+              _id: 1,
+            }}
+            inverted={false}
+            scrollToBottom={true}
+            style={{flex:0.2, alignSelf: 'stretch'}}
+            disableComposer={true}
+            renderInputToolbar={() => { return null }}
+            />
+        </View>
+    )
+  }
 
   const ModalData = () =>{
    
@@ -219,19 +241,18 @@ const Talk = () => {
       </Pressable>
       <Stack.Screen options={{ headerShown: false, title: "Chat", headerStyle : {backgroundColor: '#00000000',} }} />
         <View style={{flex:0.9, alignSelf: 'stretch'}}>
-          
-          <GiftedChat
-            messageContainerRef={chatRef}
-            messages={messages}
-            user={{
-              _id: 1,
-            }}
-            inverted={false}
-            scrollToBottom={true}
-            style={{flex:0.2, alignSelf: 'stretch'}}
-            disableComposer={true}
-            renderInputToolbar={() => { return null }}
-            />
+          <FlatList
+            data = {convos}
+            renderItem={renderConvos}
+            keyExtractor={item => {return item.key}}/>
+          <Modal
+            animationType = {"fade"}  
+            transparent = {false}  
+            visible = {seeConvo}  
+            onRequestClose = {() =>{ console.log("Modal has been closed.") } }> 
+            <chosenChat/> 
+
+          </Modal>
             
             
             

@@ -2,7 +2,7 @@ import { Text, View, TextInput, StyleSheet } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
-import useWebSocket from 'react-use-websocket';
+import useWebSocket, {ReadyState} from 'react-use-websocket';
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -83,11 +83,16 @@ export default function CreateAccount() {
         />
       </View>
 
-      <Text
+      {readyState===ReadyState.OPEN ? (
+        <Text
         onPress={submitSignUp}
-      >
+        >
         Create Account
       </Text>
+      ) : (
+        <Text>Establishing Connection {readyState}</Text>
+      )}
+      
       <Text>{result}</Text>
       <Text
           onPress={() => {router.push("/login");}}

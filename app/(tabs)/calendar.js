@@ -1,15 +1,14 @@
 import { Link, Redirect, Stack } from "expo-router";
 import { View, ImageBackground, SafeAreaView } from "react-native";
-import { AuthStore } from "../../../store";
 import { Calendar } from 'react-native-calendars';
 import React from "react";
-import styles from "../../../style";
+import styles from "../../style";
 
 const TabCalendar = () => {
-  const the_data = AuthStore.getRawState();
+  const the_data = null;
   const [markedDates, setMarkedDates] = React.useState({});
 
-  const BG = require("../../assets/BG.jpg");
+  const BG = require("../assets/BG.jpg");
 
   if (Object.keys(markedDates).length === 0){
     let temp = {};

@@ -1,16 +1,15 @@
 import { TextInput, Text, View, Button, Image, ScrollView, ImageBackground } from "react-native";
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import { API_URL } from '../../const';
+import { API_URL, setLoggedIn } from '../../utils/const.js';
 
 import { AuthStore } from "../../store.js";
 import { Stack, useRouter } from "expo-router";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocketConnection from '../../utils/useWebSocketConnection';
 import React, { useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { v4 as uuidv4 } from 'uuid';
 import DateObject from "react-date-object";
 import styles from "../../style.js";
-import * as FileSystem from 'expo-file-system';
 import _ from "lodash";
 
 export default function LogIn() {
@@ -18,7 +17,7 @@ export default function LogIn() {
   const router = useRouter();
   const sblogo = require('../assets/SoundBoardLogo.png');
   const BG = require("../assets/BG.jpg");
-  const {sendMessage, lastMessage, readyState } = useWebSocket(API_URL);
+  const { sendWebSocketMessage, lastMessage, connectionStatus, isConnected } = useWebSocketConnection();
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
   const [messageUser, setUserMessage] = React.useState('');
@@ -26,17 +25,7 @@ export default function LogIn() {
   const [tempToken, setTempToken] = React.useState(null);
   const the_data = AuthStore.getRawState();
   const [checkedTempToken, setCheck] = React.useState(false);
-  const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
-    'sad' : {"colour": "#6e79ff", "colourRGB":[110,121,255],"val":{"speechEmotion":1, "textEmotion":1}}, 
-    'angry' : {"colour": "#ff4313","colourRGB":[255,67,19], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'fear' : {"colour": "#ff8c2d","colourRGB":[255,140,45], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'disgust' : {"colour": "#e564df","colourRGB":[229,100,223], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'surprise' : {"colour": "#24c9ff","colourRGB":[36,201,255], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'love' : {"colour": "#f3cec9","colourRGB":[243,206,201], "val":{"speechEmotion":1, "textEmotion":1}}};
-   
-  const { isLoggedIn,userData} = AuthStore.useState((s) => s);
+  
   React.useEffect(() => {
     if(lastMessage){
       let e = JSON.parse(lastMessage.data);
@@ -44,23 +33,12 @@ export default function LogIn() {
       if (e.result == "build webage"){
         save("tempToken", e["tempToken"]);
         let com = setEmotionData(cleanUserData(e.data));
-        AuthStore.update((s) => {
-          s.isLoggedIn = true;
-          s.userData = e.data;
-          s.sendMessage = sendMessage;
-          s.lastMessage = lastMessage;
-          s.readyState = readyState;
-          s.messages = com[0];
-          s.markedDates = com[1];
-          s.tempToken = e["tempToken"];
-          s.language = e["language"];
-        });
-        
-        setOrganiseData(e.data)
-        let raw = addCat(e.data);
-        writeJSON(raw, "raw");
+        //setOrganiseData(e.data)
+        //let raw = addCat(e.data);
+        //writeJSON(raw, "raw");
         writeJSON({"messages":com[0]}, "messages");
         writeJSON({"markedDates":com[1]}, "markedDates");
+        setLoggedIn(true);
         router.replace("/(tabs)/Talk");
       }
     }
@@ -108,39 +86,39 @@ export default function LogIn() {
     let tempTextBox = []
     let msg = {}
     let tID = 0;
-    for (let [k,v] of Object.entries(userData)){
-          k = k.split("@")[0];
-          let tHighEmtion = 0;
-          let tHighNum = 0;
-  
-          if (tSubsection['title']!= k){
-            if(tSubsection['title']){
-      
-              tDialogData.push(tSubsection)}
-            tSubsection = {title:k, data:[]};
-          }
-          tSubsection['data'].push(v['textBox'].replace(/<br>/g,''));
-          tSubsection['data'].push(v['llmresponse']);
-          
-          tempTextBox.push(MakeMsg(uuidv4(),
-              v['textBox'].replace(/<br>/g,''),
-              k, 1, "User"));
-          
-          tempTextBox.push(MakeMsg(uuidv4(),
-            v['llmresponse'],
-            k, 2, "AI response"));
-          for (let [ke, ve] of Object.entries(v["textEmotion"])){
-            if (ve > tHighNum){
-              tHighEmtion = ke;
-              tHighNum = ve;
-            }
-          //if (tHighEmtion instanceof String) 
-          if (emotionColours.hasOwnProperty(tHighEmtion) && emotionColours[tHighEmtion].hasOwnProperty("colour")){
-            tmarkedDates[k] = {"selected": true, "selectedColor":emotionColours[tHighEmtion]["colour"]};
-          }
+      for (let [k,v] of Object.entries(userData)){
+            k = k.split("@")[0];
+            let tHighEmtion = 0;
+            let tHighNum = 0;
     
+            if (tSubsection['title']!= k){
+              if(tSubsection['title']){
+        
+                tDialogData.push(tSubsection)}
+              tSubsection = {title:k, data:[]};
+            }
+            tSubsection['data'].push(v['textBox'].replace(/<br>/g,''));
+            tSubsection['data'].push(v['llmresponse']);
             
-        }
+            tempTextBox.push(MakeMsg(uuidv4(),
+                v['textBox'].replace(/<br>/g,''),
+                k, 1, "User"));
+            
+            tempTextBox.push(MakeMsg(uuidv4(),
+              v['llmresponse'],
+              k, 2, "AI response"));
+            for (let [ke, ve] of Object.entries(v["textEmotion"])){
+              if (ve > tHighNum){
+                tHighEmtion = ke;
+                tHighNum = ve;
+              }
+            //if (tHighEmtion instanceof String) 
+            if (emotionColours.hasOwnProperty(tHighEmtion) && emotionColours[tHighEmtion].hasOwnProperty("colour")){
+              tmarkedDates[k] = {"selected": true, "selectedColor":emotionColours[tHighEmtion]["colour"]};
+            }
+      
+              
+          }
       }
 
     return([tempTextBox, tmarkedDates]);
@@ -159,23 +137,25 @@ export default function LogIn() {
   }
   function cleanUserData(userData){
     let temp = {}
-    for (let [k,v] of Object.entries(userData.data)){
-      k = k.split(")")[1].split("_");
-      k = k[4]+"-"+k[2]+"-"+k[1]+"@"+k[5]+":"+k[6]+":"+k[7];
-      temp[k] = v;
+    for (let [ka,va] of Object.entries(userData.data)){
+      for (let [k,v] of Object.entries(va)){
+        k = k.split(")")[1].split("_");
+        k =
+        
+        temp[ka][k] = v;
+      }
     }
     //temp = JSON.parse(JSON.stringify(temp).replace(/<br>/g,""));
     return(temp);
   }
 
   function handleclick(email, password){
-    console.log("handled click to ", readyState);
     if (email && password){
       let toSend = {"email":email,
                     "password":password,
                     "action":"LogIn"}
       console.log("sending =", toSend)
-      sendMessage(JSON.stringify(toSend));
+      sendWebSocketMessage(JSON.stringify(toSend));
     }else{
       alert("somethiogn is null");
     }
@@ -184,9 +164,7 @@ export default function LogIn() {
     await SecureStore.setItemAsync(key, value);
   }
   async function getValueFor(key) {
-    console.log("got here ", key);
     let result = await SecureStore.getItemAsync(key);
-    console.log("got here2");
     if (result && !checkedTempToken) {
       setCheck(true);
       setTempToken(result);
@@ -194,7 +172,7 @@ export default function LogIn() {
       toSend.action = "tokenLogin"; 
       toSend.tempToken = result;
       var jsonToSend = JSON.stringify(toSend);
-      sendMessage(jsonToSend);
+      sendWebSocketMessage(jsonToSend);
     }else{
       console.log("securestore gave =",result);
     }
@@ -205,14 +183,12 @@ export default function LogIn() {
     toSend.action = "forgotPassword"; 
     toSend.email = email;
     var jsonToSend = JSON.stringify(toSend);
-    sendMessage(jsonToSend);
+    sendWebSocketMessage(jsonToSend);
     setUserMessage("Please check the email of ",email);
 }
-  //console.log("check temp = ", checkedTempToken, " and justLoogedout = ", the_data.ju)
-  //if(!checkedTempToken && !the_data.justLoggedOut){
+
   useEffect(() =>{
     setCheck(true);
-    console.log("checked temp token is done ",checkedTempToken);
     getValueFor("tempToken");
   },[])
   return (
@@ -237,7 +213,7 @@ export default function LogIn() {
               onChangeText={password =>onChangePassword(password)}
               style={styles.textinput}
                />
-      {readyState===ReadyState.OPEN ? (
+      {connectionStatus==="Open" ? (
         <Button label="LogIn"
         color={styles.container.color}
               style={styles.container} 
@@ -247,7 +223,7 @@ export default function LogIn() {
               LogIn
         </Button>
       ) : (
-        <Text>Establishing Connection {readyState}</Text>
+        <Text>Establishing Connection {connectionStatus}</Text>
       )}
       
       <Text style={styles.text}>{messageUser}</Text>

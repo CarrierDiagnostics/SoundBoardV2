@@ -1,18 +1,17 @@
 import { Link, Redirect, Stack, useNavigation } from "expo-router";
 import { View, Text, ScrollView, Button,FlatList, TouchableOpacity, PixelRatio, Dimensions, Platform, ImageBackground } from "react-native";
-import { AuthStore } from "../../../store";
 import useWebSocket from 'react-use-websocket';
 import React, {useEffect, useMemo} from "react";
 import _ from "lodash";
 import * as SecureStore from 'expo-secure-store';
-import styles from "../../../style";
+import styles from "../../style";
 import * as FileSystem from 'expo-file-system';
 import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 
 const TabOrganise = () => {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
-  var the_data = AuthStore.getRawState();
+  var the_data = null;
   const [init, setInit] = React.useState(null)
   const [rData, setRData] = React.useState(null);
   const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
@@ -32,7 +31,7 @@ const TabOrganise = () => {
     height: SCREEN_HEIGHT,
   } = Dimensions.get('window');
   const scale = SCREEN_WIDTH / 320;
-  const BG = require("../../assets/BG.jpg");
+  const BG = require("../assets/BG.jpg");
 
   function normalize(size) {
     const newSize = size * scale 

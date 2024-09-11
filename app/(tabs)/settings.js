@@ -1,11 +1,10 @@
 import { Redirect, Stack, useRouter } from "expo-router";
 import { Button, Pressable, Text, TouchableOpacity, View, Modal, ImageBackground, SafeAreaView } from "react-native";
-import { AuthStore } from "../../../store";
 import * as SecureStore from 'expo-secure-store';
-import styles from "../../../style";
+import styles from "../../style";
 import {Picker} from '@react-native-picker/picker';
 import React from "react";
-import langlist from "../../../langlist";
+import langlist from "../../langlist";
 import useWebSocket from 'react-use-websocket';
 
 const Tab2Index = () => {
@@ -13,7 +12,7 @@ const Tab2Index = () => {
   const {sendMessage, lastMessage, readyState } = useWebSocket('wss://carriertech.uk:8008/');
   var the_data = AuthStore.getRawState();
   const [selectedLanguage, setSelectedLanguage] = React.useState(the_data.language);
-  const BG = require("../../assets/BG.jpg");
+  const BG = require("../assets/BG.jpg");
 
   const [seeModal, setSeeModal] = React.useState(false);
 

@@ -1,6 +1,5 @@
 import { Link, Redirect, Stack } from "expo-router";
 import { View, Text, Image, Pressable, ImageBackground,SafeAreaView, Modal} from "react-native";
-import { AuthStore } from "../../../store";
 import { Audio } from 'expo-av';
 import { GiftedChat } from 'react-native-gifted-chat'
 import DateObject from "react-date-object";
@@ -10,10 +9,10 @@ import * as FileSystem from 'expo-file-system';
 import { useEffect, useRef } from "react";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidv4 } from 'uuid';
-import styles from "../../../style";
+import styles from "../../style";
 import _ from "lodash";
 import { FlatList, ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { API_URL } from '../../../const';
+import { API_URL, emotionColours } from '../../utils/const';
 
 
 
@@ -28,14 +27,14 @@ const Talk = () => {
         onOpen: () => console.log('opened'),
         shouldReconnect: (closeEvent) => true,
       });
-  const the_data = AuthStore.getRawState();
-  const recImage = require('../../assets/rec.png')  //'./assets/rec.png');
-  const recStop = require('../../assets/stoprec.png');
-  const tdAnim = require('../../assets/threedotsanim.gif');
-  const BG = require("../../assets/BG.jpg");
-  const Q = require("../../assets/q.png");
-  const Q1 = require("../../assets/q1.png");
-  const Q2 = require("../../assets/q2.png");
+  const the_data = null;
+  const recImage = require('../assets/rec.png')  //'./assets/rec.png');
+  const recStop = require('../assets/stoprec.png');
+  const tdAnim = require('../assets/threedotsanim.gif');
+  const BG = require("../assets/BG.jpg");
+  const Q = require("../assets/q.png");
+  const Q1 = require("../assets/q1.png");
+  const Q2 = require("../assets/q2.png");
 
   const [recButton, changeRecState] = React.useState(recImage);
   const [recording, setRecording] = React.useState();
@@ -45,17 +44,8 @@ const Talk = () => {
   const [dataJson, setDataJson] = React.useState(null);
   const [seeConvo, setSeeConvo] = React.useState(false);
   const [convo, setConvo] = React.useState(null);
-
-  const emotionColours = {'neutral':{"colour": "#808080", "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'calm': {"colour": "#75945b", "colourRGB":[117,148,91], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'happy': {"colour": "#fff761", "colourRGB":[255,247,97],"val":{"speechEmotion":1, "textEmotion":1}}, 
-    'sad' : {"colour": "#6e79ff", "colourRGB":[110,121,255],"val":{"speechEmotion":1, "textEmotion":1}}, 
-    'angry' : {"colour": "#ff4313","colourRGB":[255,67,19], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'fear' : {"colour": "#ff8c2d","colourRGB":[255,140,45], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'disgust' : {"colour": "#e564df","colourRGB":[229,100,223], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'surprise' : {"colour": "#24c9ff","colourRGB":[36,201,255], "val":{"speechEmotion":1, "textEmotion":1}}, 
-    'love' : {"colour": "#f3cec9","colourRGB":[243,206,201], "val":{"speechEmotion":1, "textEmotion":1}}};
-
+  const [convos, setConvos] = React.useState([]);
+  
     async function writeJSON(exportData, fN){
       await FileSystem.writeAsStringAsync(FileSystem.documentDirectory + fN + "Data.json",
         JSON.stringify(exportData)

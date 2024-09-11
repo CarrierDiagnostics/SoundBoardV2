@@ -1,11 +1,10 @@
 import { Redirect, Stack, useRouter,Link, usePathname } from "expo-router";
 import { Button, Pressable, Text, StyleSheet, View, ScrollView, Modal, ImageBackground , SafeAreaView} from "react-native";
-import { AuthStore } from "../../../store";
 import { VictoryPie} from "victory-native";
 import React, {useEffect} from "react";
 import useWebSocket from 'react-use-websocket';
 import _ from "lodash";
-import styles from "../../../style";
+import styles from "../../style";
 import * as FileSystem from 'expo-file-system';
 import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 
@@ -16,11 +15,11 @@ const TabAnalysis = () => {
   const [catData, setCatData] = React.useState(null);
   const [seeModal, setSeeModal] = React.useState(false);
   const [modalCat, setModalCat] = React.useState(false);
-  const the_data = AuthStore.getRawState();
+  const the_data = null;
   var temp = {};
   const sections = ["Physical Environment","Business/Career","Finances","Health","Family and Friends","Romance","Personal Growth","Fun and Recreation"];
   const colours = [ "#75945b","#54dc9eff",  "#fff761", "#6e79ff", "#ff4313", "#f3cec9", "#24c9ff","#e564df" ]
-  const BG = require("../../assets/BG.jpg");
+  const BG = require("../assets/BG.jpg");
 
 
   async function writeJSON(exportData, fN){
